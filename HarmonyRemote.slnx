@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HarmonyRemote.Core/HarmonyRemote.Core.csproj" />
+    <Project Path="src/HarmonyRemote.App/HarmonyRemote.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HarmonyRemote.Core.Tests/HarmonyRemote.Core.Tests.csproj" />
+  </Folder>
+</Solution>

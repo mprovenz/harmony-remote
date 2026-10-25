@@ -1,0 +1,349 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="using:HarmonyRemote.App.Controls"
+             x:Class="HarmonyRemote.App.App"
+             Name="Harmony Remote"
+             RequestedThemeVariant="Dark">
+  <!-- Visual identity: a hi-fi component faceplate. Warm graphite body, rubber-feel keys, and one phosphor
+       VFD window for the activity readout, like the display on an AV receiver or amplifier. -->
+  <Application.Resources>
+    <FontFamily x:Key="Barlow">avares://harmony-remote/Assets/Fonts#Barlow</FontFamily>
+
+    <Color x:Key="Graphite">#2B2D31</Color>
+    <SolidColorBrush x:Key="BodyBrush" Color="#2B2D31" />
+    <SolidColorBrush x:Key="BodyEdgeBrush" Color="#45484E" />
+    <SolidColorBrush x:Key="KeyBrush" Color="#3A3D42" />
+    <SolidColorBrush x:Key="KeyHoverBrush" Color="#43474D" />
+    <SolidColorBrush x:Key="KeyPressedBrush" Color="#2F3236" />
+    <SolidColorBrush x:Key="KeyLipBrush" Color="#50545B" />
+    <SolidColorBrush x:Key="LegendBrush" Color="#D9DCE1" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#8D939C" />
+    <SolidColorBrush x:Key="GlassBrush" Color="#0E1A1A" />
+    <SolidColorBrush x:Key="PhosphorBrush" Color="#9BF2DF" />
+    <SolidColorBrush x:Key="PhosphorDimBrush" Color="#5FA899" />
+    <SolidColorBrush x:Key="PowerBrush" Color="#C8574A" />
+
+    <!-- Fluent's dark surfaces are near-black; bring expander and inputs onto the graphite body. -->
+    <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="#33363B" />
+    <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="#3A3D42" />
+    <SolidColorBrush x:Key="ExpanderHeaderBackgroundPressed" Color="#2F3236" />
+    <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPointerOver" Color="Transparent" />
+    <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPressed" Color="Transparent" />
+    <SolidColorBrush x:Key="ExpanderContentBackground" Color="#303237" />
+    <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="TextControlBackground" Color="#232528" />
+    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#26292C" />
+    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1E2023" />
+    <SolidColorBrush x:Key="TextControlBorderBrush" Color="#4A4E55" />
+    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#5A5F67" />
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#9BF2DF" />
+    <SolidColorBrush x:Key="ComboBoxBackground" Color="#3A3D42" />
+    <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#43474D" />
+    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="Transparent" />
+    <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#2F3236" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#9BF2DF" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#B4F6E8" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundChecked" Color="#0E1A1A" />
+
+    <StreamGeometry x:Key="PowerGlyph">M7.5,6.6 A7,7 0 1 0 16.5,6.6 M12,3.5 L12,11</StreamGeometry>
+    <StreamGeometry x:Key="SettingsGlyph">M4,8 H20 M4,16 H20 M9,5 V11 M15,13 V19</StreamGeometry>
+    <StreamGeometry x:Key="BackGlyph">M14.5,5 L7.5,12 L14.5,19</StreamGeometry>
+    <StreamGeometry x:Key="ChevronGlyph">M9.5,5 L16.5,12 L9.5,19</StreamGeometry>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- ===== keys ===== -->
+    <Style Selector="Button.key">
+      <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource LegendBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyLipBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="MinHeight" Value="34" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Focusable" Value="True" />
+    </Style>
+    <Style Selector="Button.key:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource KeyHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyLipBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource LegendBrush}" />
+    </Style>
+    <Style Selector="Button.key:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource KeyPressedBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyPressedBrush}" />
+    </Style>
+    <Style Selector="Button.key:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    </Style>
+    <Style Selector="Button.key PathIcon">
+      <Setter Property="Width" Value="14" />
+      <Setter Property="Height" Value="14" />
+    </Style>
+
+    <!-- activity keys: text left, a phosphor underline marks the running one -->
+    <Style Selector="Button.activity">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="Margin" Value="3" />
+      <Setter Property="BorderThickness" Value="0,1,0,2" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyBrush}" />
+    </Style>
+    <Style Selector="Button.activity.current">
+      <Setter Property="BorderBrush" Value="{StaticResource PhosphorBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource PhosphorBrush}" />
+    </Style>
+    <Style Selector="Button.activity.current:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderBrush" Value="{StaticResource PhosphorBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource PhosphorBrush}" />
+    </Style>
+    <Style Selector="Button.activity.pending">
+      <Setter Property="BorderBrush" Value="{StaticResource PhosphorDimBrush}" />
+      <Style.Animations>
+        <Animation Duration="0:0:1.2" IterationCount="Infinite" PlaybackDirection="Alternate">
+          <KeyFrame Cue="0%"><Setter Property="Opacity" Value="1" /></KeyFrame>
+          <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.55" /></KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- rockers: one pill holding + caption − -->
+    <Style Selector="Border.rocker">
+      <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyLipBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="CornerRadius" Value="26" />
+      <Setter Property="Width" Value="52" />
+    </Style>
+    <Style Selector="Border.rocker Button.key">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="26" />
+      <Setter Property="Height" Value="50" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="FontWeight" Value="Regular" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <!-- d-pad: a round plate with arrow keys and a centre OK -->
+    <Style Selector="Border.dpad">
+      <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyLipBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="CornerRadius" Value="84" />
+      <Setter Property="Width" Value="168" />
+      <Setter Property="Height" Value="168" />
+    </Style>
+    <!-- every d-pad key sits in the middle of its cell (buttons otherwise align left, which put up/down off-centre) -->
+    <Style Selector="Border.dpad Button.key">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.dpad Button.arrow">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Width" Value="52" />
+      <Setter Property="Height" Value="52" />
+      <Setter Property="CornerRadius" Value="26" />
+    </Style>
+    <!-- 16 (not 14) so the glyph centres on whole pixels at 1×, 1.5× and 2× in a 52-wide key -->
+    <Style Selector="Border.dpad Button.arrow PathIcon">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+    </Style>
+    <Style Selector="Border.dpad Button.ok">
+      <Setter Property="Width" Value="64" />
+      <Setter Property="Height" Value="64" />
+      <Setter Property="CornerRadius" Value="32" />
+      <Setter Property="Background" Value="#33363B" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="BorderBrush" Value="#24262A" />
+    </Style>
+
+    <Style Selector="Expander">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style Selector="Button.small">
+      <Setter Property="MinWidth" Value="52" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Padding" Value="10,0" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Margin" Value="3" />
+    </Style>
+
+    <!-- header icon buttons -->
+    <Style Selector="Button.icon">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.icon Path">
+      <Setter Property="Stroke" Value="{StaticResource MutedBrush}" />
+      <Setter Property="StrokeThickness" Value="2" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="Stretch" Value="Uniform" />
+    </Style>
+    <Style Selector="Button.icon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+    </Style>
+    <Style Selector="Button.icon:pointerover Path">
+      <Setter Property="Stroke" Value="{StaticResource LegendBrush}" />
+    </Style>
+    <Style Selector="Button.icon:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.icon.power Path">
+      <Setter Property="Stroke" Value="{StaticResource PowerBrush}" />
+    </Style>
+    <Style Selector="Button.icon.power:disabled Path">
+      <Setter Property="Stroke" Value="#5A5E66" />
+    </Style>
+    <Style Selector="Button.icon.on Path">
+      <Setter Property="Stroke" Value="{StaticResource LegendBrush}" />
+    </Style>
+
+    <!-- ===== activities / devices tabs: an underline, no new colour ===== -->
+    <Style Selector="Button.tab">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="BorderBrush" Value="#3A3D42" />
+      <Setter Property="BorderThickness" Value="0,0,0,2" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Padding" Value="0,4,0,7" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.tab:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{StaticResource LegendBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource KeyLipBrush}" />
+    </Style>
+    <Style Selector="Button.tab:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.tab.selected">
+      <Setter Property="Foreground" Value="{StaticResource LegendBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource LegendBrush}" />
+    </Style>
+    <Style Selector="Button.tab.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderBrush" Value="{StaticResource LegendBrush}" />
+    </Style>
+
+    <!-- ===== device list rows and page ===== -->
+    <Style Selector="Button.device">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,6,10,7" />
+      <Setter Property="Margin" Value="3" />
+      <Setter Property="MinHeight" Value="48" />
+    </Style>
+    <Style Selector="TextBlock.detail">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Regular" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    </Style>
+    <Style Selector="Path.chevron">
+      <Setter Property="Stroke" Value="{StaticResource MutedBrush}" />
+      <Setter Property="StrokeThickness" Value="2" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="Width" Value="12" />
+      <Setter Property="Height" Value="12" />
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="8,0,0,0" />
+    </Style>
+    <Style Selector="TextBlock.device-title">
+      <Setter Property="FontSize" Value="17" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    </Style>
+    <Style Selector="Button.key.power-off">
+      <Setter Property="Foreground" Value="{StaticResource PowerBrush}" />
+    </Style>
+    <Style Selector="Button.key.power-off:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="#E07062" />
+    </Style>
+
+    <!-- ===== the VFD window ===== -->
+    <Style Selector="Border.vfd">
+      <Setter Property="Background" Value="{StaticResource GlassBrush}" />
+      <Setter Property="BorderBrush" Value="#060C0C" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="14,10,14,11" />
+      <Setter Property="BoxShadow" Value="inset 0 2 8 0 #B0000000" />
+    </Style>
+    <Style Selector="TextBlock.vfd-title">
+      <Setter Property="Foreground" Value="{StaticResource PhosphorBrush}" />
+      <Setter Property="FontSize" Value="23" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+      <Setter Property="Effect">
+        <DropShadowEffect BlurRadius="10" OffsetX="0" OffsetY="0" Color="#9BF2DF" Opacity="0.45" />
+      </Setter>
+    </Style>
+    <Style Selector="TextBlock.vfd-sub">
+      <Setter Property="Foreground" Value="{StaticResource PhosphorDimBrush}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="ProgressBar.vfd">
+      <Setter Property="Foreground" Value="{StaticResource PhosphorBrush}" />
+      <Setter Property="Background" Value="#173130" />
+      <Setter Property="MinHeight" Value="3" />
+      <Setter Property="Height" Value="3" />
+      <Setter Property="CornerRadius" Value="1.5" />
+      <Setter Property="Margin" Value="0,7,0,0" />
+    </Style>
+
+    <!-- ===== text ===== -->
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="TextBlock.group">
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Margin" Value="3,8,0,2" />
+    </Style>
+
+    <Style Selector="Ellipse.status">
+      <Setter Property="Fill" Value="#6A6F78" />
+    </Style>
+    <Style Selector="Ellipse.status.on">
+      <Setter Property="Fill" Value="{StaticResource PhosphorBrush}" />
+    </Style>
+  </Application.Styles>
+</Application>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.mprovenz.HarmonyRemote</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Harmony Remote</name>
+  <summary>Control Logitech Harmony hubs from the system tray</summary>
+  <developer id="io.github.mprovenz">
+    <name>mprovenz</name>
+  </developer>
+  <description>
+    <p>
+      A tray remote for Logitech Harmony hubs that talks to the hub directly on your local network.
+      There's no Logitech account or cloud involved, so it doesn't depend on Logitech's servers.
+    </p>
+    <p>Click the tray icon to start an activity, change the volume, steer the menus or turn everything off.
+      Keys repeat while held, just like the physical remote.</p>
+    <p>This is an independent project and is not affiliated with or endorsed by Logitech.</p>
+  </description>
+  <url type="homepage">https://github.com/mprovenz/harmony-remote</url>
+  <url type="bugtracker">https://github.com/mprovenz/harmony-remote/issues</url>
+  <launchable type="desktop-id">io.github.mprovenz.HarmonyRemote.desktop</launchable>
+  <provides>
+    <binary>harmony-remote</binary>
+  </provides>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0" date="2026-10-15">
+      <description>
+        <p>First local build: tray icon and popup remote, activities, volume, d-pad, playback and every hub key.</p>
+      </description>
+    </release>
+  </releases>
+</component>

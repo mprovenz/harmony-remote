@@ -1,0 +1,73 @@
+# Builds the Flatpak on every push and pull request.
+#  - The bundle is kept as an artifact of the run (Actions tab → the run → Artifacts).
+#  - Pushing a tag like v0.2.0 also creates a *draft* release with the bundle attached; publish it from the Releases page.
+name: Flatpak
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths-ignore: ['**.md']   # not applied to tag pushes
+  pull_request:
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet test --configuration Release
+
+  flatpak:
+    name: Flatpak (x86_64)
+    needs: test
+    runs-on: ubuntu-24.04
+    # Flathub's builder image for the runtime the manifest uses (org.freedesktop.Platform 26.08).
+    # The action installs the dotnet10 SDK extension from Flathub itself.
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-26.08
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v7
+      # x86_64 only for now: nuget-sources.json lists the linux-x64 runtime packs. For aarch64, regenerate it with
+      # linux-arm64 as well (build.sh --sources) and add an ubuntu-24.04-arm job.
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: packaging/flatpak/io.github.mprovenz.HarmonyRemote.yml
+          bundle: harmony-remote.flatpak   # uploaded as the artifact "harmony-remote-x86_64.flatpak"
+          arch: x86_64
+
+  release:
+    name: Draft release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: flatpak
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: harmony-remote-x86_64.flatpak
+      - name: Attach the bundle to a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          asset="harmony-remote-${TAG#v}-x86_64.flatpak"
+          mv harmony-remote.flatpak "$asset"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag --generate-notes --title "Harmony Remote ${TAG#v}"
+          fi
+          gh release upload "$TAG" "$asset" --repo "$GITHUB_REPOSITORY" --clobber

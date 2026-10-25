@@ -1,0 +1,293 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HarmonyRemote.App.ViewModels"
+        xmlns:c="using:HarmonyRemote.App.Controls"
+        xmlns:d="using:HarmonyRemote.Core.Discovery"
+        x:Class="HarmonyRemote.App.Views.PopupWindow"
+        x:DataType="vm:RemoteViewModel"
+        Title="Harmony Remote"
+        Width="372"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        WindowDecorations="None"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        FontFamily="{StaticResource Barlow}"
+        Foreground="{StaticResource LegendBrush}">
+
+  <Window.DataTemplates>
+    <!-- what a key shows: its glyph if there is one, else its label -->
+    <DataTemplate DataType="vm:KeyViewModel">
+      <Panel>
+        <PathIcon Data="{Binding Icon}" IsVisible="{Binding HasIcon}" />
+        <TextBlock Text="{Binding ShortLabel}" IsVisible="{Binding !HasIcon}" TextTrimming="CharacterEllipsis" />
+      </Panel>
+    </DataTemplate>
+
+    <!-- the remote layout for one activity or one device -->
+    <DataTemplate DataType="vm:ControlPadViewModel">
+      <StackPanel Spacing="12">
+        <!-- devices: power, then inputs -->
+        <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding HasPower}">
+          <TextBlock Classes="section" Text="Power" VerticalAlignment="Center" Margin="0,0,10,0" />
+          <ItemsControl Grid.Column="1" ItemsSource="{Binding PowerKeys}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="6" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:KeyViewModel">
+                <c:RemoteKey Classes="key small" Classes.power-off="{Binding IsPowerOff}" Margin="0"
+                             Target="{Binding}" Content="{Binding}" ToolTip.Tip="{Binding Label}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+        <StackPanel IsVisible="{Binding HasInputs}" Spacing="4">
+          <TextBlock Classes="section" Text="Inputs" />
+          <ItemsControl ItemsSource="{Binding InputKeys}" Margin="-3,0">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:KeyViewModel">
+                <c:RemoteKey Classes="key small" Target="{Binding}" Content="{Binding}" ToolTip.Tip="{Binding Label}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+          <!-- volume rocker · d-pad · channel rocker, like the face of a remote; mute and last sit under the rockers -->
+          <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="168,Auto" IsVisible="{Binding HasCluster}">
+            <Border Classes="rocker" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding HasVolume}">
+              <StackPanel>
+                <c:RemoteKey Classes="key" Target="{Binding VolumeUp}" Content="{Binding VolumeUp}"
+                             IsEnabled="{Binding VolumeUp, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Volume up" />
+                <TextBlock Classes="caption" Text="Vol" />
+                <c:RemoteKey Classes="key" Target="{Binding VolumeDown}" Content="{Binding VolumeDown}"
+                             IsEnabled="{Binding VolumeDown, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Volume down" />
+              </StackPanel>
+            </Border>
+            <c:RemoteKey Grid.Row="1" Classes="key small" Target="{Binding Mute}" Content="{Binding Mute}" HorizontalAlignment="Center"
+                         IsVisible="{Binding Mute, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Mute" />
+
+            <Border Grid.Column="1" Classes="dpad" VerticalAlignment="Center" IsVisible="{Binding HasDpad}">
+              <!-- fixed cells so OK sits dead centre; the -1 top margin undoes the plate's 1px lip so rows aren't fractional -->
+              <Grid RowDefinitions="52,64,52" ColumnDefinitions="52,64,52" Margin="0,-1,0,0">
+                <c:RemoteKey Grid.Row="0" Grid.Column="1" Classes="key arrow" Target="{Binding Up}" Content="{Binding Up}"
+                             IsEnabled="{Binding Up, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Up" />
+                <c:RemoteKey Grid.Row="1" Grid.Column="0" Classes="key arrow" Target="{Binding Left}" Content="{Binding Left}"
+                             IsEnabled="{Binding Left, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Left" />
+                <c:RemoteKey Grid.Row="1" Grid.Column="1" Classes="key ok" Target="{Binding Select}" Content="{Binding Select}"
+                             IsEnabled="{Binding Select, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="OK" />
+                <c:RemoteKey Grid.Row="1" Grid.Column="2" Classes="key arrow" Target="{Binding Right}" Content="{Binding Right}"
+                             IsEnabled="{Binding Right, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Right" />
+                <c:RemoteKey Grid.Row="2" Grid.Column="1" Classes="key arrow" Target="{Binding Down}" Content="{Binding Down}"
+                             IsEnabled="{Binding Down, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Down" />
+              </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Classes="rocker" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding HasChannel}">
+              <StackPanel>
+                <c:RemoteKey Classes="key" Target="{Binding ChannelUp}" Content="{Binding ChannelUp}"
+                             IsEnabled="{Binding ChannelUp, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Next" />
+                <TextBlock Classes="caption" Text="{Binding ChannelCaption}" />
+                <c:RemoteKey Classes="key" Target="{Binding ChannelDown}" Content="{Binding ChannelDown}"
+                             IsEnabled="{Binding ChannelDown, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Previous" />
+              </StackPanel>
+            </Border>
+            <c:RemoteKey Grid.Row="1" Grid.Column="2" Classes="key small" Target="{Binding PrevChannel}" Content="{Binding PrevChannel}"
+                         HorizontalAlignment="Center"
+                         IsVisible="{Binding PrevChannel, Converter={x:Static ObjectConverters.IsNotNull}}" ToolTip.Tip="Last channel" />
+          </Grid>
+
+          <!-- menu keys -->
+          <ItemsControl ItemsSource="{Binding NavKeys}" HorizontalAlignment="Center" IsVisible="{Binding HasNav}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel HorizontalAlignment="Center" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:KeyViewModel">
+                <c:RemoteKey Classes="key small" Target="{Binding}" Content="{Binding}" ToolTip.Tip="{Binding Label}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- transport -->
+          <ItemsControl ItemsSource="{Binding TransportKeys}" HorizontalAlignment="Center" IsVisible="{Binding HasTransport}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="4" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:KeyViewModel">
+                <c:RemoteKey Classes="key" Width="40" Height="32" CornerRadius="6"
+                             Target="{Binding}" Content="{Binding}" ToolTip.Tip="{Binding Label}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- every key the hub knows for this activity or device -->
+          <Expander Header="{Binding AllGroupsTitle}" IsExpanded="{Binding ExpandAllGroups, Mode=OneTime}"
+                    IsVisible="{Binding HasGroups}" HorizontalAlignment="Stretch" Padding="8,4,8,8">
+            <ScrollViewer MaxHeight="300" HorizontalScrollBarVisibility="Disabled">
+              <ItemsControl ItemsSource="{Binding AllGroups}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:ControlGroupViewModel">
+                    <StackPanel>
+                      <TextBlock Classes="group" Text="{Binding Title}" />
+                      <ItemsControl ItemsSource="{Binding Keys}">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel />
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="vm:KeyViewModel">
+                            <c:RemoteKey Classes="key small" Target="{Binding}" Content="{Binding}" ToolTip.Tip="{Binding Label}" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </Expander>
+      </StackPanel>
+    </DataTemplate>
+  </Window.DataTemplates>
+
+  <Border Background="{StaticResource BodyBrush}" BorderBrush="{StaticResource BodyEdgeBrush}" BorderThickness="1"
+          CornerRadius="14" Padding="14,10,4,14" Margin="1">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="12" Margin="0,0,10,0">
+
+      <!-- header: link state, hub name, settings, power -->
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <Ellipse Classes="status" Classes.on="{Binding IsConnected}" Width="7" Height="7"
+                 VerticalAlignment="Center" Margin="2,0,8,0" />
+        <TextBlock Grid.Column="1" Classes="muted" Text="{Binding HubName}" VerticalAlignment="Center" />
+        <Button Grid.Column="2" Classes="icon" Classes.on="{Binding ShowSettings}"
+                Command="{Binding ToggleSettingsCommand}" ToolTip.Tip="Settings">
+          <Path Data="{StaticResource SettingsGlyph}" />
+        </Button>
+        <Button Grid.Column="3" Classes="icon power" Command="{Binding PowerOffCommand}"
+                ToolTip.Tip="Turn everything off" Margin="2,0,0,0">
+          <Path Data="{StaticResource PowerGlyph}" />
+        </Button>
+      </Grid>
+
+      <!-- the VFD window: what's running -->
+      <Border Classes="vfd">
+        <StackPanel>
+          <TextBlock Classes="vfd-title" Text="{Binding DisplayTitle}" />
+          <TextBlock Classes="vfd-sub" Text="{Binding DisplaySubtitle}" />
+          <ProgressBar Classes="vfd" IsVisible="{Binding IsBusy}" Value="{Binding Progress}"
+                       IsIndeterminate="{Binding IsProgressIndeterminate}" Maximum="100" />
+        </StackPanel>
+      </Border>
+
+      <!-- settings -->
+      <StackPanel IsVisible="{Binding ShowSettings}" Spacing="8" Margin="0,2,0,4">
+        <TextBlock Classes="muted" Text="Hub address" />
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBox Text="{Binding HubAddressInput}" PlaceholderText="For example 192.168.1.20" />
+          <Button Grid.Column="1" Classes="key small" Content="Connect" Command="{Binding ConnectCommand}" Margin="6,0,0,0" />
+        </Grid>
+        <Button Classes="key small" HorizontalAlignment="Left" Margin="0"
+                Content="Find hubs on this network" Command="{Binding FindHubsCommand}" IsEnabled="{Binding !IsSearching}" />
+        <TextBlock Classes="muted" Text="{Binding SearchMessage}" TextWrapping="Wrap"
+                   IsVisible="{Binding SearchMessage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <ItemsControl ItemsSource="{Binding DiscoveredHubs}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="d:DiscoveredHub">
+              <Button Classes="key small" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,2"
+                      Command="{Binding $parent[ItemsControl].((vm:RemoteViewModel)DataContext).UseHubCommand}"
+                      CommandParameter="{Binding}">
+                <TextBlock>
+                  <Run Text="{Binding DisplayName}" />
+                  <Run Text="{Binding Ip}" Foreground="{StaticResource MutedBrush}" />
+                </TextBlock>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Grid ColumnDefinitions="Auto,*" Margin="0,4,0,0">
+          <TextBlock Classes="muted" Text="Open the remote" VerticalAlignment="Center" Margin="0,0,10,0" />
+          <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                    ItemsSource="{Binding AnchorOptions}" SelectedItem="{Binding SelectedAnchor}" />
+        </Grid>
+        <CheckBox IsChecked="{Binding StartAtLogin}" Content="Start when I log in" />
+      </StackPanel>
+
+      <!-- what the remote controls: activities, or one device at a time -->
+      <Grid ColumnDefinitions="*,*" IsVisible="{Binding HasConfig}">
+        <Button Classes="tab" Classes.selected="{Binding !ShowDevices}" Content="Activities"
+                Command="{Binding ShowActivitiesTabCommand}" />
+        <Button Grid.Column="1" Classes="tab" Classes.selected="{Binding ShowDevices}" Content="Devices"
+                Command="{Binding ShowDevicesTabCommand}" />
+      </Grid>
+
+      <!-- activities, and the keys of the running one -->
+      <StackPanel Spacing="12" IsVisible="{Binding !ShowDevices}">
+        <ItemsControl ItemsSource="{Binding Activities}" Margin="-3,0">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="2" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ActivityItemViewModel">
+              <Button Classes="key activity" Classes.current="{Binding IsCurrent}" Classes.pending="{Binding IsPending}"
+                      Command="{Binding StartCommand}" ToolTip.Tip="{Binding Label}">
+                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ContentControl Content="{Binding ActivityPad}" Margin="0,4,0,0" />
+      </StackPanel>
+
+      <!-- devices: the list -->
+      <ItemsControl ItemsSource="{Binding Devices}" IsVisible="{Binding ShowDeviceList}" Margin="-3,0">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:DeviceItemViewModel">
+            <Button Classes="key device" Command="{Binding OpenCommand}" ToolTip.Tip="{Binding Description}">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Classes="detail" Text="{Binding Description}" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <Path Grid.Column="1" Classes="chevron" Data="{StaticResource ChevronGlyph}" />
+              </Grid>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <!-- devices: one device's page -->
+      <StackPanel Spacing="12" IsVisible="{Binding ShowDevicePage}">
+        <Grid ColumnDefinitions="Auto,*">
+          <Button Classes="icon" Command="{Binding CloseDeviceCommand}" ToolTip.Tip="All devices">
+            <Path Data="{StaticResource BackGlyph}" />
+          </Button>
+          <StackPanel Grid.Column="1" Margin="6,0,0,0" VerticalAlignment="Center">
+            <TextBlock Classes="device-title" Text="{Binding OpenDeviceItem.Label, FallbackValue=''}" />
+            <TextBlock Classes="muted" Text="{Binding OpenDeviceItem.Description, FallbackValue=''}" />
+          </StackPanel>
+        </Grid>
+        <ContentControl Content="{Binding DevicePad}" />
+      </StackPanel>
+    </StackPanel>
+    </ScrollViewer>
+  </Border>
+</Window>

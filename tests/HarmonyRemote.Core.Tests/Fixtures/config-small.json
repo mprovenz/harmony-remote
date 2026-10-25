@@ -1,0 +1,42 @@
+{
+  "activity": [
+    {
+      "id": "-1", "label": "PowerOff", "type": "PowerOff", "controlGroup": []
+    },
+    {
+      "id": "200", "label": "Listen to Music", "activityOrder": "2", "type": "VirtualCdMulti",
+      "VolumeActivityRole": "11",
+      "controlGroup": [
+        { "name": "Volume", "function": [
+          { "name": "VolumeDown", "label": "Volume Down", "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"11\"}" },
+          { "name": "Mute", "label": "Mute", "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"11\"}" },
+          { "name": "VolumeUp", "label": "Volume Up", "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"11\"}" }
+        ] },
+        { "name": "TransportBasic", "function": [
+          { "name": "Play", "label": "Play", "action": "{\"command\":\"Play\",\"type\":\"IRCommand\",\"deviceId\":\"12\"}" }
+        ] }
+      ]
+    },
+    {
+      "id": "100", "label": "Watch TV", "activityOrder": "0", "type": "VirtualTelevisionN",
+      "roles": { "VolumeActivityRole": "12" },
+      "controlGroup": [
+        { "name": "NavigationBasic", "function": [
+          { "name": "DirectionUp", "label": "Direction Up", "action": "{\"command\":\"DirectionUp\",\"type\":\"IRCommand\",\"deviceId\":\"13\"}" },
+          { "name": "Select", "label": "Select", "action": "{\"command\":\"Select\",\"type\":\"IRCommand\",\"deviceId\":\"13\"}" }
+        ] }
+      ]
+    }
+  ],
+  "device": [
+    { "id": "11", "label": "Amp", "manufacturer": "Acme", "model": "A-200", "type": "Amplifier", "Transport": 1,
+      "controlGroup": [ { "name": "Power", "function": [
+        { "name": "PowerToggle", "label": "Power Toggle", "action": "{\"command\":\"PowerToggle\",\"type\":\"IRCommand\",\"deviceId\":\"11\"}" } ] },
+        { "name": "Miscellaneous", "function": [
+          { "name": "InputHdmi1", "label": "InputHdmi1", "action": "{\"command\":\"InputHdmi1\",\"type\":\"IRCommand\",\"deviceId\":\"11\"}" },
+          { "name": "AnalogBalanced", "label": "AnalogBalanced", "action": "{\"command\":\"AnalogBalanced\",\"type\":\"IRCommand\",\"deviceId\":\"11\"}" } ] } ] },
+    { "id": "13", "label": "Player", "manufacturer": "Acme", "model": "MP-1", "type": "GameConsoleWithDvd", "Transport": "33", "controlGroup": [] }
+  ],
+  "sequence": [],
+  "global": { "locale": "en-US" }
+}

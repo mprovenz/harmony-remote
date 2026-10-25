@@ -1,0 +1,24 @@
+# .NET build output
+bin/
+obj/
+TestResults/
+*.trx
+
+# IDE and editor files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+*~
+.DS_Store
+
+# Flatpak build output (build.sh keeps its state in ~/.cache, these are just in case)
+*.flatpak
+.flatpak-builder/
+
+# Local-only files
+*.apk
+*.log
+.claude/settings.local.json

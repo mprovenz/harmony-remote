@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Harmony Remote
+GenericName=Remote control
+Comment=Control your Logitech Harmony hub from the system tray
+Exec=harmony-remote --show
+Icon=io.github.mprovenz.HarmonyRemote
+Terminal=false
+Categories=AudioVideo;
+Keywords=Logitech;Harmony;remote;hub;TV;activity;
+StartupNotify=false
