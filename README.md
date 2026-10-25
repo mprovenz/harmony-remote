@@ -3,6 +3,14 @@
 A system-tray remote for Logitech Harmony hubs on Linux. It talks to the hub directly over your local network, so
 there's no Logitech account, cloud service or phone involved. Click the tray icon and the remote pops up.
 
+<p align="center">
+  <img src="docs/screenshots/activities.png" width="360"
+       alt="The remote opened from the tray, on the Activities tab: activity buttons, a volume rocker, the d-pad, menu keys and playback keys">
+  &nbsp;
+  <img src="docs/screenshots/device.png" width="329"
+       alt="A device page: power keys, volume and channel rockers, the d-pad, playback keys and the expanded All controls list">
+</p>
+
 ## Features
 
 - **Activities:** start any activity, see which one is running, and turn everything off.
